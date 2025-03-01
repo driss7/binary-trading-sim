@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/binary-trading-sim/static/css/main.d7ac1dc5.css",
-    "main.js": "/binary-trading-sim/static/js/main.f9e40a94.js",
+    "main.css": "/binary-trading-sim/static/css/main.be9b06e4.css",
+    "main.js": "/binary-trading-sim/static/js/main.f0febf00.js",
     "static/js/453.13373eac.chunk.js": "/binary-trading-sim/static/js/453.13373eac.chunk.js",
     "index.html": "/binary-trading-sim/index.html",
-    "main.d7ac1dc5.css.map": "/binary-trading-sim/static/css/main.d7ac1dc5.css.map",
-    "main.f9e40a94.js.map": "/binary-trading-sim/static/js/main.f9e40a94.js.map",
+    "main.be9b06e4.css.map": "/binary-trading-sim/static/css/main.be9b06e4.css.map",
+    "main.f0febf00.js.map": "/binary-trading-sim/static/js/main.f0febf00.js.map",
     "453.13373eac.chunk.js.map": "/binary-trading-sim/static/js/453.13373eac.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d7ac1dc5.css",
-    "static/js/main.f9e40a94.js"
+    "static/css/main.be9b06e4.css",
+    "static/js/main.f0febf00.js"
   ]
 }
