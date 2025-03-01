@@ -3,6 +3,8 @@
 ## Overview
 Driss Binary Trading Sim is a simple **binary options trading simulation app** built with **React and Tailwind CSS**. It allows users to place trades, manage their balance, and track trade history, statistics, and transactions.
 
+![alt text](image.png)
+
 ## Features
 ### 🎯 **Sim Trading System**
 - **Trade Up/Down:** Predict market movement and place trades.
