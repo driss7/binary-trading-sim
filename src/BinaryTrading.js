@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const BinaryTradingApp = () => {
-    const [balance, setBalance] = useState(0);
-    const [returnPercentage, setReturnPercentage] = useState(85);
-    const [tradeAmount, setTradeAmount] = useState(10);
-    const [tradeHistory, setTradeHistory] = useState([]);
-    const [instrument, setInstrument] = useState("EUR/USD");
-    const [amount, setAmount] = useState(1000);
-    const [transactionHistory, setTransactionHistory] = useState([]);
+    const getInitialState = (key, defaultValue) => {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : defaultValue;
+    };
+
+    const [balance, setBalance] = useState(() => getInitialState("balance", 0));
+    const [returnPercentage, setReturnPercentage] = useState(() => getInitialState("returnPercentage", 85));
+    const [tradeAmount, setTradeAmount] = useState(() => getInitialState("tradeAmount", 10));
+    const [tradeHistory, setTradeHistory] = useState(() => getInitialState("tradeHistory", []));
+    const [instrument, setInstrument] = useState(() => getInitialState("instrument", "EUR/USD"));
+    const [amount, setAmount] = useState(() => getInitialState("amount", 1000));
+    const [transactionHistory, setTransactionHistory] = useState(() => getInitialState("transactionHistory", []));
+
+    const saveStateToLocalStorage = (key, value) => {
+        localStorage.setItem(key, JSON.stringify(value));
+    };
+
+    useEffect(() => saveStateToLocalStorage("balance", balance), [balance]);
+    useEffect(() => saveStateToLocalStorage("returnPercentage", returnPercentage), [returnPercentage]);
+    useEffect(() => saveStateToLocalStorage("tradeAmount", tradeAmount), [tradeAmount]);
+    useEffect(() => saveStateToLocalStorage("tradeHistory", tradeHistory), [tradeHistory]);
+    useEffect(() => saveStateToLocalStorage("instrument", instrument), [instrument]);
+    useEffect(() => saveStateToLocalStorage("amount", amount), [amount]);
+    useEffect(() => saveStateToLocalStorage("transactionHistory", transactionHistory), [transactionHistory]);
 
     const handleTrade = (direction) => {
         const newTrade = {
@@ -58,6 +75,17 @@ const BinaryTradingApp = () => {
         }
     };
 
+    const handleReset = () => {
+        setBalance(0);
+        setReturnPercentage(85);
+        setTradeAmount(10);
+        setTradeHistory([]);
+        setInstrument("EUR/USD");
+        setAmount(1000);
+        setTransactionHistory([]);
+        localStorage.clear();
+    };
+
     const totalTrades = tradeHistory.length;
     const wins = tradeHistory.filter((trade) => trade.status === "won").length;
     const losses = tradeHistory.filter((trade) => trade.status === "lost").length;
@@ -68,7 +96,6 @@ const BinaryTradingApp = () => {
 
     const tradeDisabled = tradeAmount > balance;
 
-    console.log(tradeHistory);
     return (
         <div className="text-center p-8 font-sans bg-gray-100 min-h-screen">
             <h2 className="text-2xl font-bold">Binary Trading Simulator</h2>
@@ -93,6 +120,7 @@ const BinaryTradingApp = () => {
                 <button onClick={handleDeposit} className="bg-blue-500 text-white px-4 py-2 rounded ml-2">Deposit</button>
                 <button onClick={handleWithdrawal} className="bg-gray-500 text-white px-4 py-2 rounded ml-2">Withdraw</button>
             </div>
+            
 
             <div className="mt-12 mb-12">
                 <button onClick={() => handleTrade("up")} disabled={tradeDisabled} className={
@@ -102,6 +130,12 @@ const BinaryTradingApp = () => {
                     `bg-red-500 text-white px-12 py-2 rounded ${tradeDisabled ? "opacity-50 cursor-not-allowed" : ""}`
                 }>Down</button>
             </div>
+
+            {balance === 0 && (
+                <div className="text-red-500 font-bold mt-4">
+                    Your balance is zero. Please deposit funds to start trading.
+                </div>
+            )}
 
             <h3 className="text-xl font-bold mt-24">Trade History</h3>
             <div className="overflow-y-auto max-h-96">
@@ -197,6 +231,7 @@ const BinaryTradingApp = () => {
                     </tbody>
                 </table>
             </div>
+            <button onClick={handleReset} className="bg-red-500 text-white px-4 py-2 rounded mt-6">Reset</button>
             <footer className="mt-24 text-gray-500">
                 Created by Driss 🚀
             </footer>
