@@ -21,15 +21,15 @@ const BinaryTradingApp = () => {
         setTradeHistory([newTrade, ...tradeHistory]);
     };
 
-    const updateTradeStatus = (id, isWinner) => {
+    const updateTradeStatus = (id, status) => {
         setTradeHistory((prevHistory) =>
             prevHistory.map((trade) =>
                 trade.id === id
                     ? {
                         ...trade,
-                        status: isWinner ? "won" : "lost",
-                        profit: isWinner ? trade.returnAmount - trade.tradeAmount : -trade.tradeAmount,
-                        returnAmount: isWinner ? trade.returnAmount : null
+                        status,
+                        profit: status === "won" ? trade.returnAmount - trade.tradeAmount : status === "lost" ? -trade.tradeAmount : 0,
+                        returnAmount: status === "won" ? trade.returnAmount : status === "lost" ? 0 : trade.tradeAmount
                     }
                     : trade
             )
@@ -37,7 +37,7 @@ const BinaryTradingApp = () => {
 
         setBalance((prevBalance) =>
             tradeHistory.find((trade) => trade.id === id)?.status === "pending"
-                ? prevBalance + (isWinner ? tradeHistory.find((trade) => trade.id === id).returnAmount - tradeAmount : -tradeAmount)
+                ? prevBalance + (status === "won" ? tradeHistory.find((trade) => trade.id === id).returnAmount - tradeAmount : status === "lost" ? -tradeAmount : 0)
                 : prevBalance
         );
     };
@@ -61,6 +61,7 @@ const BinaryTradingApp = () => {
     const totalTrades = tradeHistory.length;
     const wins = tradeHistory.filter((trade) => trade.status === "won").length;
     const losses = tradeHistory.filter((trade) => trade.status === "lost").length;
+    const ties = tradeHistory.filter((trade) => trade.status === "tie").length;
     const winPercentage = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(2) : 0;
     const profitFactor = losses > 0 ? (wins / losses).toFixed(2) : wins > 0 ? "∞" : "0";
     const totalProfit = tradeHistory.reduce((acc, trade) => acc + (trade.profit || 0), 0).toFixed(2);
@@ -107,36 +108,43 @@ const BinaryTradingApp = () => {
                 <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="border p-2">ID</th>
-                            <th className="border p-2">Instrument</th>
-                            <th className="border p-2">Direction</th>
-                            <th className="border p-2">Trade Amount</th>
-                            <th className="border p-2">Return Amount</th>
-                            <th className="border p-2">Status</th>
+                            <th className="border p-2 w-36">ID</th>
+                            <th className="border p-2 w-36">Instrument</th>
+                            <th className="border p-2 w-36">Direction</th>
+                            <th className="border p-2 w-36">Trade Amount</th>
+                            <th className="border p-2 w-36">Return Amount</th>
+                            <th className="border p-2 w-36">Profit/Loss</th>
+                            <th className="border p-2 w-36">Status</th>
                             <th className="border p-2">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {tradeHistory.map((trade) => (
-                            <tr key={trade.id} className={`text-center ${trade.status === "won" ? "bg-green-100" : trade.status === "lost" ? "bg-red-100" : ""}`}>
-                                <td className="border p-2">{trade.id}</td>
-                                <td className="border p-2">{trade.instrument}</td>
-                                <td className="border p-2">{trade.direction}</td>
-                                <td className="border p-2">${trade.tradeAmount.toFixed(2)}</td>
-                                <td className="border p-2">
+                            <tr key={trade.id} className={`text-center ${trade.status === "won" ? "bg-green-100" : trade.status === "lost" ? "bg-red-100" : trade.status === "tie" ? "bg-yellow-100" : ""}`}>
+                                <td className="border p-2 w-36">{trade.id}</td>
+                                <td className="border p-2 w-36">{trade.instrument}</td>
+                                <td className="border p-2 w-36">{trade.direction}</td>
+                                <td className="border p-2 w-36">${trade.tradeAmount.toFixed(2)}</td>
+                                <td className="border p-2 w-36">
                                 {
                                     trade.returnAmount > 0 ? `$${trade.returnAmount.toFixed(2)}` :`-$${trade.tradeAmount.toFixed(2)}`
                                 }
 
                                 </td>
-                                <td className="border p-2">{trade.status}</td>
+                                <td className={`border p-2 ${trade.profit >= 0 ? "text-green-500" : "text-red-500"}`}>
+                                    {trade.profit ? `$${trade.profit.toFixed(2)}` : "-"}
+                                </td>
+                                <td className="border p-2 w-36">{trade.status}</td>
                                 <td className="border p-2">
-                                    {trade.status === "pending" && (
+                                    {trade.status === "pending" ? (
                                         <>
-                                            <button onClick={() => updateTradeStatus(trade.id, true)} className="bg-green-500 text-white px-3 py-1 rounded mr-2">Won</button>
-                                            <button onClick={() => updateTradeStatus(trade.id, false)} className="bg-red-500 text-white px-3 py-1 rounded">Lost</button>
+                                            <button onClick={() => updateTradeStatus(trade.id, "won")} className="bg-green-500 text-white px-3 py-1 rounded mr-2">Won</button>
+                                            <button onClick={() => updateTradeStatus(trade.id, "lost")} className="bg-red-500 text-white px-3 py-1 rounded mr-2">Lost</button>
+                                            <button onClick={() => updateTradeStatus(trade.id, "tie")} className="bg-yellow-500 text-white px-3 py-1 rounded">Tie</button>
                                         </>
-                                    )}
+                                    ): 
+                                    <>Complete</>
+                                    }
                                 </td>
                             </tr>
                         ))}
@@ -150,6 +158,7 @@ const BinaryTradingApp = () => {
                         <th className="border p-2">Total Trades</th>
                         <th className="border p-2">Wins</th>
                         <th className="border p-2">Losses</th>
+                        <th className="border p-2">Ties</th>
                         <th className="border p-2">Win Percentage</th>
                         <th className="border p-2">Profit Factor</th>
                         <th className="border p-2">Total Profit/Loss</th>
@@ -160,6 +169,7 @@ const BinaryTradingApp = () => {
                         <td className="border p-2">{totalTrades}</td>
                         <td className="border p-2">{wins}</td>
                         <td className="border p-2">{losses}</td>
+                        <td className="border p-2">{ties}</td>
                         <td className="border p-2">{winPercentage}%</td>
                         <td className="border p-2">{profitFactor}</td>
                         <td className={`border font-bold p-2 ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}>${totalProfit}</td>
