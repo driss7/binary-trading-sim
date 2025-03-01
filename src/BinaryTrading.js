@@ -70,7 +70,7 @@ const BinaryTradingApp = () => {
     console.log(tradeHistory);
     return (
         <div className="text-center p-8 font-sans bg-gray-100 min-h-screen">
-            <h2 className="text-2xl font-bold">Driss Binary Trading Sim</h2>
+            <h2 className="text-2xl font-bold">Binary Trading Simulator</h2>
             <div className="mt-4">
                 <label className="block">Account Balance:
                     <input type="text" value={`$${balance}`} disabled className="border p-1 ml-2 font-bold" />
@@ -102,46 +102,47 @@ const BinaryTradingApp = () => {
                 }>Down</button>
             </div>
 
-
             <h3 className="text-xl font-bold mt-24">Trade History</h3>
-            <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-200">
-                        <th className="border p-2">ID</th>
-                        <th className="border p-2">Instrument</th>
-                        <th className="border p-2">Direction</th>
-                        <th className="border p-2">Trade Amount</th>
-                        <th className="border p-2">Return Amount</th>
-                        <th className="border p-2">Status</th>
-                        <th className="border p-2">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tradeHistory.map((trade) => (
-                        <tr key={trade.id} className="text-center">
-                            <td className="border p-2">{trade.id}</td>
-                            <td className="border p-2">{trade.instrument}</td>
-                            <td className="border p-2">{trade.direction}</td>
-                            <td className="border p-2">${trade.tradeAmount.toFixed(2)}</td>
-                            <td className="border p-2">
-                            {
-                                trade.returnAmount > 0 ? `$${trade.returnAmount.toFixed(2)}` :`-$${trade.tradeAmount.toFixed(2)}`
-                            }
-
-                            </td>
-                            <td className="border p-2">{trade.status}</td>
-                            <td className="border p-2">
-                                {trade.status === "pending" && (
-                                    <>
-                                        <button onClick={() => updateTradeStatus(trade.id, true)} className="bg-green-500 text-white px-3 py-1 rounded mr-2">Won</button>
-                                        <button onClick={() => updateTradeStatus(trade.id, false)} className="bg-red-500 text-white px-3 py-1 rounded">Lost</button>
-                                    </>
-                                )}
-                            </td>
+            <div className="overflow-y-auto max-h-96">
+                <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
+                    <thead>
+                        <tr className="bg-gray-200">
+                            <th className="border p-2">ID</th>
+                            <th className="border p-2">Instrument</th>
+                            <th className="border p-2">Direction</th>
+                            <th className="border p-2">Trade Amount</th>
+                            <th className="border p-2">Return Amount</th>
+                            <th className="border p-2">Status</th>
+                            <th className="border p-2">Action</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {tradeHistory.map((trade) => (
+                            <tr key={trade.id} className={`text-center ${trade.status === "won" ? "bg-green-100" : trade.status === "lost" ? "bg-red-100" : ""}`}>
+                                <td className="border p-2">{trade.id}</td>
+                                <td className="border p-2">{trade.instrument}</td>
+                                <td className="border p-2">{trade.direction}</td>
+                                <td className="border p-2">${trade.tradeAmount.toFixed(2)}</td>
+                                <td className="border p-2">
+                                {
+                                    trade.returnAmount > 0 ? `$${trade.returnAmount.toFixed(2)}` :`-$${trade.tradeAmount.toFixed(2)}`
+                                }
+
+                                </td>
+                                <td className="border p-2">{trade.status}</td>
+                                <td className="border p-2">
+                                    {trade.status === "pending" && (
+                                        <>
+                                            <button onClick={() => updateTradeStatus(trade.id, true)} className="bg-green-500 text-white px-3 py-1 rounded mr-2">Won</button>
+                                            <button onClick={() => updateTradeStatus(trade.id, false)} className="bg-red-500 text-white px-3 py-1 rounded">Lost</button>
+                                        </>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             <h3 className="text-xl font-bold mt-24">Trading Statistics</h3>
             <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
                 <thead>
@@ -155,35 +156,40 @@ const BinaryTradingApp = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className="text-center">
+                    <tr className={`text-center ${totalProfit >= 0 ? "bg-green-100" : "bg-red-100" }`}>
                         <td className="border p-2">{totalTrades}</td>
                         <td className="border p-2">{wins}</td>
                         <td className="border p-2">{losses}</td>
                         <td className="border p-2">{winPercentage}%</td>
                         <td className="border p-2">{profitFactor}</td>
-                        <td className={`border p-2 ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}>${totalProfit}</td>
+                        <td className={`border font-bold p-2 ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}>${totalProfit}</td>
                     </tr>
                 </tbody>
             </table>
             <h3 className="text-xl font-bold mt-24">Transaction History</h3>
-            <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-200">
-                        <th className="border p-2">ID</th>
-                        <th className="border p-2">Type</th>
-                        <th className="border p-2">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {transactionHistory.map((transaction) => (
-                        <tr key={transaction.id} className="text-center">
-                            <td className="border p-2">{transaction.id}</td>
-                            <td className="border p-2">{transaction.type}</td>
-                            <td className="border p-2">${transaction.amount.toFixed(2)}</td>
+            <div className="overflow-y-auto max-h-96">
+                <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
+                    <thead>
+                        <tr className="bg-gray-200">
+                            <th className="border p-2">ID</th>
+                            <th className="border p-2">Type</th>
+                            <th className="border p-2">Amount</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {transactionHistory.map((transaction) => (
+                            <tr key={transaction.id} className="text-center">
+                                <td className="border p-2">{transaction.id}</td>
+                                <td className="border p-2">{transaction.type}</td>
+                                <td className="border p-2">${transaction.amount.toFixed(2)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <footer className="mt-24 text-gray-500">
+                Created by Driss 🚀
+            </footer>
         </div>
     );
 };
