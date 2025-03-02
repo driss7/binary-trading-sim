@@ -91,9 +91,10 @@ const BinaryTradingApp = () => {
     const losses = tradeHistory.filter((trade) => trade.status === "lost").length;
     const ties = tradeHistory.filter((trade) => trade.status === "tie").length;
     const winPercentage = totalTrades > 0 ? ((wins / totalTrades) * 100).toFixed(2) : 0;
-    const profitFactor = losses > 0 ? (wins / losses).toFixed(2) : wins > 0 ? "∞" : "0";
-    const totalProfit = tradeHistory.reduce((acc, trade) => acc + (trade.profit || 0), 0).toFixed(2);
-
+    const totalProfits = tradeHistory.reduce((acc, trade) => trade.status === "won" ? acc + trade.profit : acc, 0).toFixed(2);
+    const totalLosses = tradeHistory.reduce((acc, trade) => trade.status === "lost" ? acc + trade.tradeAmount : acc, 0).toFixed(2);
+    const profitFactor = losses > 0 ? (totalProfits / totalLosses).toFixed(2) : wins > 0 ? "∞" : "0";
+    const finalPNL = tradeHistory.reduce((acc, trade) => trade.profit ? acc + trade.profit : acc, 0).toFixed(2);
     const tradeDisabled = tradeAmount > balance;
 
     return (
@@ -204,14 +205,14 @@ const BinaryTradingApp = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className={`text-center ${totalProfit >= 0 ? "bg-green-100" : "bg-red-100"}`}>
+                    <tr className={`text-center ${finalPNL >= 0 ? "bg-green-100" : "bg-red-100"}`}>
                         <td className="border p-2">{totalTrades}</td>
                         <td className="border p-2">{wins}</td>
                         <td className="border p-2">{losses}</td>
                         <td className="border p-2">{ties}</td>
                         <td className="border p-2">{winPercentage}%</td>
                         <td className="border p-2">{profitFactor}</td>
-                        <td className={`border font-bold p-2 ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}>${totalProfit}</td>
+                        <td className={`border font-bold p-2 ${finalPNL >= 0 ? "text-green-500" : "text-red-500"}`}>${finalPNL}</td>
                     </tr>
                 </tbody>
             </table>
